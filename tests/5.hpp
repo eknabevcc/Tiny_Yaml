@@ -5,6 +5,7 @@
  */
 
  #include <iostream>
+ #include <vector>
  #include "../yaml/yaml.hpp"
  
  namespace TINY_YAML{
