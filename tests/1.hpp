@@ -56,7 +56,7 @@ namespace tests {
         }
         std::cout << "-- TESTGROUP test_variables RESULT: " << passed << " passed out of " << total << std::endl;
         std::cout << "############################" << std::endl;
-        return true;
+        return total == passed;
     }
 
 }}
