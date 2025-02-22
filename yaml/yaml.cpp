@@ -218,15 +218,10 @@ namespace TINY_YAML {
 			}
 			
 			/* List of nodes/items */
-			if (dashPos != std::string::npos) {
-				/*a dash should alway come in the beginning*/
-				if ((parentsStack.top().first->getSize() != 0 && !parentsStack.top().third) || parentsStack.size() == 0) { 
-					faulty = true;
-					std::cerr << "ERROR: Variable " << nodeID << " contains a '-' at column " << dashPos << ". A Dash must not exist there." << std::endl;
-					break;
-				}
+			if (dashPos < firstCharPos) {  // a dash in the beginning indicates a list item
 
 				parentsStack.top().third = true;		// The current parrent is found to have list items
+
 				/*If dash comes with colon => we create a virtual node that has internal nodes */
 				if (colonPos != std::string::npos) {
 					
