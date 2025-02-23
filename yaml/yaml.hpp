@@ -154,6 +154,10 @@ namespace TINY_YAML {
 			return *m_children[identifier];
 		}
 
+		const std::unordered_map<std::string, std::shared_ptr<Node>>& GetChildren() const {
+			return m_children;
+		}
+
 		/// <summary>
 		/// 
 		/// </summary>
@@ -186,6 +190,10 @@ namespace TINY_YAML {
 
 		Node& operator[](const std::string& identifier) {
 			return *m_roots[identifier];
+		}
+
+		const std::unordered_map<std::string, std::shared_ptr<Node>>& GetNodes() const {
+			return m_roots;
 		}
 	};
 
