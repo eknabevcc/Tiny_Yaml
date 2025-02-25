@@ -6,10 +6,15 @@
 
 
 int main(int argc, char** argv) {
-    TINY_YAML::tests::test_1_variables();
-    TINY_YAML::tests::test_2_basic_object();
-    TINY_YAML::tests::test_3_basic_list();
-    TINY_YAML::tests::test_4_basic_object_list();
-    TINY_YAML::tests::test_5_complex_nested_object();
-    return 0;
+    bool passed = true;
+
+    passed &= TINY_YAML::tests::test_1_variables();
+    passed &= TINY_YAML::tests::test_2_basic_object();
+    passed &= TINY_YAML::tests::test_3_basic_list();
+    passed &= TINY_YAML::tests::test_4_basic_object_list();
+    passed &= TINY_YAML::tests::test_5_complex_nested_object();
+
+    printf("%s\n", passed ? "All tests PASSED" : "At least one test FAILED");
+
+    return passed ? 0 : -1;
 }

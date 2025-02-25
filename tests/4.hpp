@@ -45,6 +45,6 @@
          }
          std::cout << "-- TESTGROUP test_basic_object_list RESULT: " << passed << " passed out of " << total << std::endl;
          std::cout << "############################" << std::endl;
-         return true;
+         return total == passed;
      }
  }}

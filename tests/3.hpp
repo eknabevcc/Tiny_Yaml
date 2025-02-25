@@ -5,6 +5,7 @@
  */
 
  #include <iostream>
+ #include <vector>
  #include "../yaml/yaml.hpp"
  
  namespace TINY_YAML{
@@ -47,6 +48,6 @@
          }
          std::cout << "-- TESTGROUP test_basic_list RESULT: " << passed << " passed out of " << total << std::endl;
          std::cout << "############################" << std::endl;
-         return true;
+         return total == passed;
      }
  }}

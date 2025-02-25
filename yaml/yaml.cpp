@@ -218,15 +218,10 @@ namespace TINY_YAML {
 			}
 			
 			/* List of nodes/items */
-			if (dashPos != std::string::npos) {
-				/*a dash should alway come in the beginning*/
-				if ((parentsStack.top().first->getSize() != 0 && !parentsStack.top().third) || parentsStack.size() == 0) { 
-					faulty = true;
-					std::cerr << "ERROR: Variable " << nodeID << " contains a '-' at column " << dashPos << ". A Dash must not exist there." << std::endl;
-					break;
-				}
+			if (dashPos < firstCharPos) {  // a dash in the beginning indicates a list item
 
 				parentsStack.top().third = true;		// The current parrent is found to have list items
+
 				/*If dash comes with colon => we create a virtual node that has internal nodes */
 				if (colonPos != std::string::npos) {
 					
@@ -245,7 +240,7 @@ namespace TINY_YAML {
 						break;
 					}
 					/*Make the current node the new parent*/
-					parentsStack.push(Triple<std::shared_ptr<Node>, unsigned int, bool>(pnode, dashPos, true));
+					parentsStack.push(Triple<std::shared_ptr<Node>, unsigned int, bool>(pnode, static_cast<unsigned int>(dashPos), true));
 					dashPos = std::string::npos;	
 				}
 				else { /* A list of elements inside the current parent pnode */
@@ -273,7 +268,7 @@ namespace TINY_YAML {
 				else if (parentsStack.size() != 0 && !parentsStack.top().first->append(pnode)) { // If it is not at root level and it is failed to attach the current node to the current parent
 					faulty = true; break;
 				}
-				parentsStack.push(Triple<std::shared_ptr<Node>, unsigned int, bool>(pnode, firstCharPos, false));
+				parentsStack.push(Triple<std::shared_ptr<Node>, unsigned int, bool>(pnode, static_cast<unsigned int>(firstCharPos), false));
 				continue;
 			}
 

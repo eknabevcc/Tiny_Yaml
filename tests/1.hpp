@@ -45,13 +45,30 @@ namespace tests {
             total++; passed += assert(yamlFile["comment_text"].getData<std::string>(), std::string("\"this is how to write a # comment\""));
             total++; passed += assert(yamlFile["var_comm"].getData<std::string>(), std::string("\"Some text\""));
             total++; passed += assert(yamlFile["special_text"].getData<std::string>(), std::string("\"Some#text\""));
+            total++; passed += assert(yamlFile["quotation_marks_not_needed"].getData<std::string>(), std::string("should_be-ok"));
+            total++; passed += assert(yamlFile["mixed_string_space_numbers"].getData<std::string>(), std::string("this-is 100_ok"));
+            total++; passed += assert(static_cast<int>(yamlFile["parent-label"].getSize()), 2);  // two children nodes
+            total++; passed += assert(yamlFile["parent-label"]["window"].getData<std::string>(), std::string("60 60 800 400"));
+            total++; passed += assert(yamlFile["parent-label"]["child_with_dash"].getData<std::string>(), std::string("this-is also 100_ok"));
+
+            // test GetNodes() method
+            total++;
+            for (auto& it : yamlFile.getNodes()) {  // GetNodes() method returns a map of all nodes in the yaml file
+                if (it.first == "quotation_marks_not_needed")
+                {
+                    passed += assert(it.second->getData<std::string>(), std::string("should_be-ok"));
+                    break;
+                }
+            }
+            // also check getID() method
+            total++; passed += assert(yamlFile["var_comm"].getID(), std::string("var_comm"));
         }catch(const std::exception& e){
             std::cerr << e.what() << std::endl;
             return false;
         }
         std::cout << "-- TESTGROUP test_variables RESULT: " << passed << " passed out of " << total << std::endl;
         std::cout << "############################" << std::endl;
-        return true;
+        return total == passed;
     }
 
 }}
