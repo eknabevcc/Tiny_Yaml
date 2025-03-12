@@ -3,10 +3,10 @@
 * This module is an open source light weight yaml parser created by the original author.
 * Anyone is free to contribute/use/edit the parser for all kind off stuff. However, the original author and the github link of the original author (Mohammed Ghaith Al-Mahdawi (Mohido)) and module must be clearly disclosed and mentioned.
 * Contribution are welcome! but requires the original author must approve the code before merging to the master/development branches first.
-* 
-* 
-* 
-* 
+*
+*
+*
+*
 * Original Author: Mohammed Ghaith Al-Mahdawi (Mohido)
 * Module: Tiny Yaml parser
 * Official Remote Repository: https://github.com/Mohido/Tiny_Yaml.git
@@ -21,9 +21,9 @@
 * Notes:
 *	- All values are stored as strings. The developer will have to go through changing a string to number if needed. (e.g: if value is 123, it is stored as string)
 *	- At the moment there is no save into file function since it is using the std::unordered_map for storing the children nodes.
-*	- This is a light-weight library, meaning that it will not handle exceptions and missuse of data. For instance, accessing a node that does not exist will not be handled by the library. 
-* 
-* 
+*	- This is a light-weight library, meaning that it will not handle exceptions and missuse of data. For instance, accessing a node that does not exist will not be handled by the library.
+*
+*
 * Example Yaml file:
 *		|-------------------------------------|
 *		| object:							  |
@@ -53,19 +53,19 @@
 *		|       - extra3					  |
 *		| 									  |
 *		|-------------------------------------|
-* 
+*
 * -	value <"mohido"> in <object.name> can be accessed as follows:
 *		coolYamlObject["object"]["name"].getData<std::string>();			// Note, this returns a reference to the data itself, the user can copy it into a new object or use the object directly.
-* 
+*
 * - value <123> of the <version> can be accessed as follows:
 *		coolYamlObject["version"].getData<std::string>();
-* 
+*
 * - value <item1> of <list[0]> can be accessed as follows:
 *		coolYamlObject["list"].getData<std::vector<std::string>>()[0];		// When a node contains a list of elements, it can be accessed via `getData<std::vector<std::string>>`
-* 
+*
 * - value <"node1"> of <node_list[0].name> can be accessed as follows:
 *		coolYamlObject["node_list"]["0"]["name"].getData<std::string>();	// When a node contains a list of nodes, it can be access via `["<nodes_index>"]`
-* 
+*
 * - value <extra3> of <node_list[1].extra[2]> can be accessed as follows:
 *		coolYamlObject["node_list"]["1"]["extra"].getData<std::vector<std::string>>()[2];
 */
@@ -95,7 +95,7 @@ namespace TINY_YAML {
 
 	public:
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="identifier"></param>
 		/// <param name="data"></param>
@@ -104,14 +104,14 @@ namespace TINY_YAML {
 		~Node();
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="node"></param>
 		/// <returns></returns>
 		bool append(std::shared_ptr<Node> node);
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <returns></returns>
 		unsigned int getSize() {
@@ -119,14 +119,14 @@ namespace TINY_YAML {
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="result"></param>
 		/// <returns></returns>
 		std::string& getID();
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <typeparam name="T"></typeparam>
 		/// <param name=""></param>
@@ -135,9 +135,9 @@ namespace TINY_YAML {
 			return *std::static_pointer_cast<T>(m_data);
 		}
 
-		
+
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		friend std::ostream& operator<<(std::ostream& os, const Node& node) {
 			os << node.m_identifier << " (" << &node << ")" << std::endl;
@@ -148,7 +148,7 @@ namespace TINY_YAML {
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		Node& operator[](const std::string& identifier) {
 			return *m_children[identifier];
@@ -159,7 +159,7 @@ namespace TINY_YAML {
 		}
 
 		/// <summary>
-		/// 
+		///
 		/// </summary>
 		/// <param name="data"></param>
 		/// <returns></returns>
@@ -173,13 +173,14 @@ namespace TINY_YAML {
 
 	class Yaml {
 		std::unordered_map<std::string, std::shared_ptr<Node>> m_roots;			// The root nodes in the file.
+		std::string error_message;  // container for any error message
 	public:
-		Yaml(const std::string& filepath);		
+		Yaml(const std::string& filepath);
 		~Yaml();
 
 		bool load(const std::string& filepath);									// Loads data from a specific file
 		// bool save(const std::string& filepath);								// Saves data too a specific file, For future release..
-	
+
 		friend std::ostream& operator<<(std::ostream& os, Yaml& yaml) {
 			for (const auto& it: yaml.m_roots) {
 				os << *it.second;
@@ -189,7 +190,12 @@ namespace TINY_YAML {
 		}
 
 		Node& operator[](const std::string& identifier) {
-			return *m_roots[identifier];
+			Node& node = *m_roots[identifier];
+			if (std::addressof(node) == 0)
+			{
+				throw std::runtime_error("Failed to locate key: " + identifier);
+			}
+            return node;
 		}
 
 		const std::unordered_map<std::string, std::shared_ptr<Node>>& getNodes() const {

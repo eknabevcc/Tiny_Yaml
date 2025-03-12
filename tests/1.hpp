@@ -37,6 +37,7 @@ namespace tests {
         std::cout << "############# TESTGROUP: test_variables" << std::endl;
         try{
             Yaml yamlFile( dirpath() + std::string("/1.yaml"));
+
             total++; passed += assert(yamlFile["version"].getData<std::string>(), std::string("1.2.3"));
             total++; passed += assert(yamlFile["name"].getData<std::string>(), std::string("\"tiny yaml\""));
             total++; passed += assert(yamlFile["age"].getData<std::string>(), std::string("123"));
@@ -63,6 +64,16 @@ namespace tests {
             }
             // also check getID() method
             total++; passed += assert(yamlFile["var_comm"].getID(), std::string("var_comm"));
+
+            // test missing key
+            try {
+                std::string value = yamlFile["dont_exist"].getData<std::string>();
+            }
+            catch (const std::exception& e) {
+                std::cout << e.what() << std::endl;
+                total++; passed++;  // value does not exist, exception is expected
+            }
+
         }catch(const std::exception& e){
             std::cerr << e.what() << std::endl;
             return false;

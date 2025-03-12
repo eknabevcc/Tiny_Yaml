@@ -10,7 +10,6 @@ special_text: "Some#text" # With special character in middle of string.
 spaced_value:    "Some#text"
 quotation_marks_not_needed: should_be-ok
 mixed_string_space_numbers: this-is 100_ok
-missing_value:
 duplicate_key: first_value
 parent-label:
   window: 60 60 800 400
