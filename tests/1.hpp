@@ -1,7 +1,7 @@
 /**
  * @file 1.hpp
  * @author Mohammed Ghaith Al-Mahdawi (Mohido)
- * @brief Tests basic YAML variables processing. 
+ * @brief Tests basic YAML variables processing.
  */
 
 #include <iostream>
@@ -25,7 +25,7 @@ namespace tests {
             std::string hppfilepath(__FILE__);
             #if _WIN32
                 return hppfilepath.substr(0, hppfilepath.find_last_of("\\"));
-            #else 
+            #else
                 return hppfilepath.substr(0, hppfilepath.find_last_of("/"));
             #endif
         }
@@ -37,16 +37,17 @@ namespace tests {
         std::cout << "############# TESTGROUP: test_variables" << std::endl;
         try{
             Yaml yamlFile( dirpath() + std::string("/1.yaml"));
-            total++; passed += assert(yamlFile["version"].getData<std::string>(), std::string("1.2.3")); 
+            total++; passed += assert(yamlFile["version"].getData<std::string>(), std::string("1.2.3"));
             total++; passed += assert(yamlFile["name"].getData<std::string>(), std::string("\"tiny yaml\""));
             total++; passed += assert(yamlFile["age"].getData<std::string>(), std::string("123"));
             total++; passed += assert(yamlFile["alive"].getData<std::string>(), std::string("true"));
-            total++; passed += assert(yamlFile["complex_text"].getData<std::string>(), std::string("\"-1234he-\"")); 
+            total++; passed += assert(yamlFile["complex_text"].getData<std::string>(), std::string("\"-1234he-\""));
             total++; passed += assert(yamlFile["comment_text"].getData<std::string>(), std::string("\"this is how to write a # comment\""));
             total++; passed += assert(yamlFile["var_comm"].getData<std::string>(), std::string("\"Some text\""));
             total++; passed += assert(yamlFile["special_text"].getData<std::string>(), std::string("\"Some#text\""));
             total++; passed += assert(yamlFile["quotation_marks_not_needed"].getData<std::string>(), std::string("should_be-ok"));
             total++; passed += assert(yamlFile["mixed_string_space_numbers"].getData<std::string>(), std::string("this-is 100_ok"));
+            total++; passed += assert(yamlFile["duplicate_key"].getData<std::string>(), std::string("first_value"));
             total++; passed += assert(static_cast<int>(yamlFile["parent-label"].getSize()), 2);  // two children nodes
             total++; passed += assert(yamlFile["parent-label"]["window"].getData<std::string>(), std::string("60 60 800 400"));
             total++; passed += assert(yamlFile["parent-label"]["child_with_dash"].getData<std::string>(), std::string("this-is also 100_ok"));

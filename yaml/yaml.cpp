@@ -87,25 +87,26 @@ namespace TINY_YAML {
 	: m_identifier(identifier), m_data(data)
 	{}
 
-	
+
 	Node::~Node() {
 		m_children.clear();
 	}
-	
-	
+
+
 	std::string& Node::getID() {
 		return this->m_identifier;
 	}
 
-	
+
 	bool Node::append(std::shared_ptr<Node> node) {
 		std::string& nid = node->getID();
-		if (this->m_children.find(nid) != this->m_children.end())
+		if (this->m_children.find(nid) != this->m_children.end()) {
 			return false;
+		}
 		this->m_children.insert({ nid, node });
 		return true;
 	}
-	
+
 
 	/////////////////////////////// YAML CLASS METHODS ///////////////////////////////
 	Yaml::Yaml(const std::string& filepath) {
@@ -186,13 +187,13 @@ namespace TINY_YAML {
 					break;
 				}
 			}
-			
+
 			if(fstQuotePos != std::string::npos && lstQuotePos == std::string::npos){
 				std::cerr << "ERROR: unclosed quote found. Please close the quote and reparse." << std::endl;
 				faulty = true; break;
 			}
 
-			if (hashPos != std::string::npos) 
+			if (hashPos != std::string::npos)
 				lineContent.erase(hashPos);
 
 			std::size_t colonPos = lineContent.find(':');
@@ -202,7 +203,7 @@ namespace TINY_YAML {
 			/*Validation layers*/
 			if (firstCharPos == std::string::npos)		// If line is empty (Only white spaces), read next line
 				continue;
-		
+
 			if (colonPos == dashPos && dashPos == std::string::npos) { // No dash and no colon in the line => Invalid
 				faulty = true; break;
 			}
@@ -211,12 +212,12 @@ namespace TINY_YAML {
 			std::shared_ptr<Node> pnode;
 			std::size_t nodeLastCharPos = (colonPos <= lastCharPos) ? colonPos : lastCharPos+1;
 			std::string nodeID = lineContent.substr(firstCharPos, nodeLastCharPos - firstCharPos);				// Can be the pnode id or the array values.
-			
+
 			/* Layer up. (Current line has less indentation than the previous parent = does not belong to it)*/
 			while (parentsStack.size() != 0 && parentsStack.top().second >= firstCharPos) {
 				parentsStack.pop();
 			}
-			
+
 			/* List of nodes/items */
 			if (dashPos < firstCharPos) {  // a dash in the beginning indicates a list item
 
@@ -224,7 +225,7 @@ namespace TINY_YAML {
 
 				/*If dash comes with colon => we create a virtual node that has internal nodes */
 				if (colonPos != std::string::npos) {
-					
+
 					/* Since the virtual nodes indentation = dashpos, we have to consider the dashpos now*/
 					while (parentsStack.size() != 0 && parentsStack.top().second >= dashPos) {
 						parentsStack.pop();
@@ -241,7 +242,7 @@ namespace TINY_YAML {
 					}
 					/*Make the current node the new parent*/
 					parentsStack.push(Triple<std::shared_ptr<Node>, unsigned int, bool>(pnode, static_cast<unsigned int>(dashPos), true));
-					dashPos = std::string::npos;	
+					dashPos = std::string::npos;
 				}
 				else { /* A list of elements inside the current parent pnode */
 					std::vector<std::string>* pvect = &parentsStack.top().first.get()->getData<std::vector<std::string>>();		// Get the current data
@@ -281,17 +282,25 @@ namespace TINY_YAML {
 				/*Build pnode*/
 				pnode = std::make_shared<Node>(Node(nodeID, std::make_shared<std::string>(value)));
 
-				if(parentsStack.size() == 0 && this->m_roots.find(nodeID) == this->m_roots.end()){	// Insert at root level
+				if (parentsStack.size() == 0) {	// Insert at root level
+					if (this->m_roots.find(nodeID) == this->m_roots.end()) {
 						this->m_roots.insert({ nodeID, pnode });
-				}
-				else if (parentsStack.size() != 0  && !parentsStack.top().first->append(pnode)) {	// Insert at parent level
-					faulty = true;
-					break;
-				}
+					}
+					else
+					{
+						std::cerr << "Duplicate (root) key \"" << value << "\" found at line: " << line << std::endl;
+						faulty = true;
+						break;
+					}
+                }
+                else if (!parentsStack.top().first->append(pnode)) { // Insert at parent level
+					std::cerr << "Duplicate (parent) key \"" << value << "\" found at line: " << line << std::endl;
+                    faulty = true;
+                    break;
+                }
 			}
-		
 		}
-		
+
 		if (faulty) {
 			std::cerr << "Yaml Parser: Error: Failed to parse file, invalid yaml syntax at line: " << line << std::endl;
 			file.close();

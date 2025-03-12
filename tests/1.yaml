@@ -7,9 +7,11 @@ complex_text: "-1234he-"
 comment_text: "this is how to write a # comment"
 var_comm: "Some text" # This is some weird commend
 special_text: "Some#text" # With special character in middle of string.
-spaced_value:    "Some#text"    
+spaced_value:    "Some#text"
 quotation_marks_not_needed: should_be-ok
 mixed_string_space_numbers: this-is 100_ok
+missing_value:
+duplicate_key: first_value
 parent-label:
   window: 60 60 800 400
   child_with_dash: this-is also 100_ok
